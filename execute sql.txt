@@ -1,0 +1,7 @@
+CREATE DEFINER=`root`@`192.168.30.%` PROCEDURE `exeu_table`(in sqlstr varchar(5000))
+BEGIN
+    set @sqlstr=sqlstr;  
+    prepare stmt from @sqlstr;  
+    EXECUTE stmt;           
+    deallocate prepare stmt;     
+END
