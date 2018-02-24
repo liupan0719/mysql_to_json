@@ -1,0 +1,24 @@
+CREATE DEFINER=`root`@`192.168.30.%` FUNCTION `proc_test`(tableName varchar(32)) RETURNS varchar(5000) CHARSET utf8mb4
+BEGIN
+ DECLARE  no_more_record INT DEFAULT 0;
+ DECLARE  strsql VARCHAR(5000);
+ DECLARE  col_name  VARCHAR(32);
+ DECLARE  col_type  VARCHAR(32);
+ DECLARE  cur_record CURSOR FOR   select COLUMN_NAME,DATA_TYPE from information_schema.`COLUMNS` where  table_schema='quanhu' and table_name=tableName;
+ DECLARE  CONTINUE HANDLER FOR NOT FOUND  SET  no_more_record = 1; 
+ SET strsql = "select REPLACE(CONCAT('{',";
+ OPEN  cur_record;
+ FETCH  cur_record INTO col_name,col_type; 
+ WHILE no_more_record != 1 DO
+		##SELECT CONCAT("to_json(",col_name,",'",col_name,"',",col_type,")");
+		SET strsql = CONCAT(strsql,"to_json(",col_name,",'",col_name,"','",col_type,"'),");
+
+ FETCH  cur_record INTO col_name,col_type;
+
+ END WHILE;
+ CLOSE  cur_record;
+ SET strsql = LEFT(strsql,LENGTH(strsql)-1);
+ SET strsql = CONCAT(strsql,",'}'),',}','}')"," FROM ",tableName);
+ 
+ RETURN strsql;
+END
