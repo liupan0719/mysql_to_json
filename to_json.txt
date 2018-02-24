@@ -1,0 +1,21 @@
+CREATE DEFINER=`root`@`192.168.30.%` FUNCTION `to_json`(COL text,col_name varchar(64),types varchar(12)) RETURNS text CHARSET utf8mb4
+BEGIN 
+	DECLARE result_string TEXT DEFAULT '' ;
+  DECLARE colstr TEXT DEFAULT '' ;
+	
+	if (ISNULL(COL)|| LENGTH(COL) = 0 ) then 
+		SET result_string='';
+	else 
+		if (types = 'int' || types = 'bigint' || types = 'tinyint') then 
+			SET result_string=CONCAT("\"",col_name,"\":",COL,",");
+		else 
+			if(col_name='content_source') THEN
+				SET colstr = REPLACE(COL,'"','\\\"');
+				SET result_string=CONCAT("\"",col_name,"\":\"",colstr,"\",");
+			else 
+				SET result_string=CONCAT("\"",col_name,"\":\"",COL,"\",");
+			END IF;
+		end if;
+	end if ;
+RETURN result_string;
+END
