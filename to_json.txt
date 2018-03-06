@@ -2,6 +2,7 @@ CREATE DEFINER=`root`@`192.168.30.%` FUNCTION `to_json`(COL text,col_name varcha
 BEGIN 
 	DECLARE result_string TEXT DEFAULT '' ;
   DECLARE colstr TEXT DEFAULT '' ;
+	DECLARE colstr1 TEXT DEFAULT '' ;
 	
 	if (ISNULL(COL)|| LENGTH(COL) = 0 ) then 
 		SET result_string='';
@@ -9,9 +10,10 @@ BEGIN
 		if (types = 'int' || types = 'bigint' || types = 'tinyint') then 
 			SET result_string=CONCAT("\"",col_name,"\":",COL,",");
 		else 
-			if(col_name='content_source') THEN
-				SET colstr = REPLACE(COL,'"','\\\"');
-				SET result_string=CONCAT("\"",col_name,"\":\"",colstr,"\",");
+			if(col_name='content_source' || col_name='content') THEN
+				SET colstr = REPLACE(COL,'\\\"','\\\\\"');
+				SET colstr1 = REPLACE(colstr,'"','\\\"');
+				SET result_string=CONCAT("\"",col_name,"\":\"",colstr1,"\",");
 			else 
 				SET result_string=CONCAT("\"",col_name,"\":\"",COL,"\",");
 			END IF;
